@@ -1,0 +1,1 @@
+FLASK_APP=self-service-app.py

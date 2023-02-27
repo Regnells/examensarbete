@@ -1,6 +1,6 @@
 from flask import Flask
 from config import Config
-from ad_authenticate import ad_tools
+from ad_tools import ad_tools
 
 app = Flask(__name__)
 app.config.from_object(Config)

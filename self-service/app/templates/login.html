@@ -23,10 +23,9 @@
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul>
-        <!-- {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %} -->
-        Login failed, please try again.
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
     </ul>
     {% endif %}
     {% endwith %}

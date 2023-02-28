@@ -10,8 +10,14 @@
     <body>
         <div>
         One Click IT
-        <a href="/index">Home</a>
-        <a href="/login">Login</a>
+        <a href="{{ url_for('index') }}">Home</a>
+        <!-- If user is not logged in, display login, else display logout -->
+        {% if 'username' in session %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+        <a href="{{ url_for('portal') }}">Portal</a>
         </div>
         <hr>
         {% block content %}

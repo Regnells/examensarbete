@@ -1,5 +1,5 @@
 from ldap3 import Server, Connection, ALL
-from pyad import *
+#from pyad import pyad, aduser, adcontainer
 
 class ad_tools:
     def __init__(self):
@@ -47,19 +47,36 @@ class ad_tools:
     # All earlier functions are related to the login process, this one is for the admin tool.
     def find_user(self, username):
         conn = self.user_session
-        conn.search(f'cn={username},ou=exusers,dc=examen,dc=local', '(objectClass=person)', attributes=['memberOf', 'cn'])
-        groups = conn.entries[0].memberOf.values
-        name = conn.entries[0].cn.value
-        return name, groups
+        # The regex is kinda wonky bit it makes it so you can search using firstname and lastname
+        conn.search("ou=exusers,dc=examen,dc=local", f'(cn=*{username}*)', attributes=['memberOf', 'cn', 'givenName', 'sn'])
+        names = []
+        for i in range(len(conn.entries)):
+            names.append(conn.entries[i].cn.value)
+        return names
     
+    def find_groups(self, username):
+        conn = self.user_session
+        conn.search("ou=exusers,dc=examen,dc=local", f'(cn=*{username}*)', attributes=['memberOf'])
+        groups = []
+        # Wacky string manipulation. The LDAP3 library probably contains an attribute that gets me this per default.
+        # Splitting the string at the comma and then taking the first part of the string and removing the first 3 characters (which in this case is "CN=")
+        try:
+            for i in conn.entries[0].memberOf.values:
+                i = i.split(",")[0]
+                i = i[3:]
+                groups.append(i)
+            return groups
+        except:
+            pass
+
     def add_user(self, username, password):
         # This requires the PC to be domain joined.
         pyad.set_defaults(ldap_server="172.16.1.36", username="administrator", password="Linux4Ever")
         ou = pyad.adcontainer.ADContainer.from_dn("OU=exusers,DC=examen,DC=local")
         user = pyad.aduser.ADUser.create(username, ou, password)
 
-# if __name__ == "__main__":
-#     ad = ad_tools()
-#     ad.authenticate('anna.jansson', 'Linux4Ever')
-#     ad.add_user('test', 'Linux4Ever')
+if __name__ == "__main__":
+    ad = ad_tools()
+    ad.authenticate("bosse.blodtorstig", "Linux4Ever")
+    print(ad.find_groups("anna"))
 

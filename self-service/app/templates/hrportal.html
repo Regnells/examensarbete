@@ -2,5 +2,6 @@
 
 {% block content %}
     <h1>One Click IT - HR Portal</h1>
-        <p>Here you are able to search for users in your domain.</p>
+    <a href="{{ url_for('searchuser') }}">Search User</a>
+    <a href="{{ url_for('groupsearch') }}">User Groups</a>
 {% endblock %}

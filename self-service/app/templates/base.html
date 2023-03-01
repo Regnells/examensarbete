@@ -17,7 +17,13 @@
         {% else %}
             <a href="{{ url_for('login') }}">Login</a>
         {% endif %}
-        <a href="{{ url_for('portal') }}">Portal</a>
+        {% if is_hr %}
+            <a href="{{ url_for('hrportal') }}">Portal</a>
+        {% elif is_it %}
+            <a href="{{ url_for('adminportal') }}">Portal</a>
+        {% else %}
+            <a href="{{ url_for('portal') }}">Portal</a>
+        {% endif %}
         </div>
         <hr>
         {% block content %}

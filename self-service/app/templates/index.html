@@ -3,4 +3,13 @@
 {% block content %}
     <h1>Welcome to the Self-Service portal</h1>
     <p>We hope you will enjoy the tool!</p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
 {% endblock %}

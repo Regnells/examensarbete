@@ -5,7 +5,7 @@ class ad_tools:
     def __init__(self):
         self.user_session = None
         self.useredited = None
-        self.server = Server('172.16.1.36', get_info=ALL)
+        self.server = Server('10.6.67.240', get_info=ALL)
 
     def authenticate(self, username, password):
 

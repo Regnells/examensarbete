@@ -2,6 +2,7 @@ from app import app
 from flask import render_template, flash, redirect, session, url_for
 from app.forms import LoginForm, CreateUserForm, SearchUserForm
 from ad_tools import ad_tools
+import pythoncom
 
 # Since we're checking perms everywhere this function should help with that.
 def check_permissions(session, perm_it, perm_hr):
@@ -113,7 +114,7 @@ def searchuser():
                 return render_template('searchuser.html', title='HR Portal', is_hr=is_hr, form=form, found_user=found_user)
             else:
                 flash('User not found.')
-                return redirect(url_for('hrportal'))
+                return redirect(url_for('searchuser'))
     else:
         flash('You are not authorized to access this page.')
         return redirect(url_for('login'))
@@ -137,7 +138,7 @@ def groupsearch():
                 return render_template('groupsearch.html', title='HR Portal', is_hr=is_hr, form=form, found_group=found_group)
             else:
                 flash('User not found.')
-                return redirect(url_for('hrportal'))
+                return redirect(url_for('groupsearch'))
     else:
         flash('You are not authorized to access this page.')
         return redirect(url_for('login'))
@@ -161,22 +162,30 @@ def adminportal():
 
 @app.route('/adminportal/createuser', methods=['GET', 'POST'])
 def createuser():
-    form = CreateUserForm()
-
     try:
         check_perm = check_permissions(session, is_it, is_hr)
     except:
         flash('You are not authorized to access this page.')
         return redirect(url_for('login'))
     
+    form = CreateUserForm()
+    # Without this pyad does not work.
+    pythoncom.CoInitialize()
+    
     if check_perm == "IT":
         if form.validate_on_submit():
-            if ad.create_user(form.username.data, form.password.data, form.firstname.data, form.lastname.data, form.email.data):
+            try:
+                ad.create_user(form.firstname.data, form.lastname.data, form.password.data, global_username, global_password)
                 flash('User created successfully.')
-                return redirect(url_for('adminportal'))
-            else:
-                flash('User creation failed.')
-                return redirect(url_for('adminportal'))
+                return render_template('createuser.html', title='Create User', form=form)
+            except:
+                flash('Error creating user.')
+                return render_template('createuser.html', title='Create User', form=form)
+    else:
+        flash('You are not authorized to access this page.')
+        return redirect(url_for('login'))
+    
+    return render_template('createuser.html', title='Create User', form=form)
 
 @app.route('/logout')
 def logout():

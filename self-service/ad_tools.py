@@ -1,11 +1,11 @@
 from ldap3 import Server, Connection, ALL
-#from pyad import pyad, aduser, adcontainer
+from pyad import pyad, aduser, adcontainer
 
 class ad_tools:
     def __init__(self):
         self.user_session = None
         self.useredited = None
-        self.server = Server('10.6.67.240', get_info=ALL)
+        self.server = Server('172.16.1.36', get_info=ALL)
 
     def authenticate(self, username, password):
 
@@ -69,14 +69,11 @@ class ad_tools:
         except:
             pass
 
-    def add_user(self, username, password):
+    def add_user(self, firstname, lastname, password, creator, creator_password):
         # This requires the PC to be domain joined.
-        pyad.set_defaults(ldap_server="172.16.1.36", username="administrator", password="Linux4Ever")
+        pyad.set_defaults(ldap_server="172.16.1.36", username=f"{creator}", password=f"{creator_password}")
         ou = pyad.adcontainer.ADContainer.from_dn("OU=exusers,DC=examen,DC=local")
-        user = pyad.aduser.ADUser.create(username, ou, password)
-
-if __name__ == "__main__":
-    ad = ad_tools()
-    ad.authenticate("bosse.blodtorstig", "Linux4Ever")
-    print(ad.find_groups("anna"))
+        # Optional attribute did not like f strings
+        upn = f"{firstname.lower()}.{lastname.lower()}"
+        pyad.aduser.ADUser.create(f"{firstname} {lastname}", ou, password, optional_attributes={"givenName":firstname,"sn":lastname,"userPrincipalName":f"{upn}@examen.local","sAMAccountName":upn})
 

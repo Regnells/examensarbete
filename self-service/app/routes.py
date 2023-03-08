@@ -46,21 +46,30 @@ def login():
         global auth
         auth = ad.authenticate(form.username.data, form.password.data)
         
-        global is_it
-        global is_hr
-        is_it = ad.check_it()
-        is_hr = ad.check_hr()
+        if auth:
+            global is_it
+            global is_hr
+            is_it = ad.check_it()
+            is_hr = ad.check_hr()
 
-        if auth and is_hr:
-            # Create user session
-            session.permanent = False
-            session['username'] = form.username.data
-            return redirect(url_for('hrportal'))
-        elif auth and is_it:
-            # Create user session
-            session.permanent = False
-            session['username'] = form.username.data
-            return redirect(url_for('adminportal'))
+            if auth and is_it and is_hr:
+                # Create user session
+                session.permanent = False
+                session['username'] = form.username.data
+                return redirect(url_for('adminportal'))
+            elif auth and is_hr:
+                # Create user session
+                session.permanent = False
+                session['username'] = form.username.data
+                return redirect(url_for('hrportal'))
+            elif auth and is_it:
+                # Create user session
+                session.permanent = False
+                session['username'] = form.username.data
+                return redirect(url_for('adminportal'))
+            else:
+                flash('User is not authorized to access this page.')
+                return redirect(url_for('login'))
         else:
             flash('Invalid username or password')
             return redirect(url_for('login'))

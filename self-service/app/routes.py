@@ -184,7 +184,7 @@ def createuser():
     if check_perm == "IT":
         if form.validate_on_submit():
             try:
-                ad.create_user(form.firstname.data, form.lastname.data, form.password.data, global_username, global_password)
+                ad.add_user(form.firstname.data, form.lastname.data, form.password.data, global_username, global_password)
                 flash('User created successfully.')
                 return render_template('createuser.html', title='Create User', form=form)
             except:

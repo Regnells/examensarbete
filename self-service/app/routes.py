@@ -184,6 +184,12 @@ def createuser():
     if check_perm == "IT":
         if form.validate_on_submit():
             try:
+                # check if user exists
+                username = ad.find_user(f"{form.firstname.data} {form.lastname.data}")
+                if username:
+                    flash('User already exists.')
+                    return render_template('createuser.html', title='Create User', form=form)
+                
                 ad.add_user(form.firstname.data, form.lastname.data, form.password.data, global_username, global_password)
                 flash('User created successfully.')
                 return render_template('createuser.html', title='Create User', form=form)

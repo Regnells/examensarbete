@@ -36,6 +36,10 @@ def login():
     global ad
     ad = ad_tools()
 
+    if 'username' in session:
+        flash('You are already logged in.')
+        return redirect(url_for('portal'))
+
     if form.validate_on_submit():
         # Hacky globals to the rescue once again. Im' sure there is a way to use session for this.
         global global_username
@@ -188,6 +192,11 @@ def createuser():
                 username = ad.find_user(f"{form.firstname.data} {form.lastname.data}")
                 if username:
                     flash('User already exists.')
+                    return render_template('createuser.html', title='Create User', form=form)
+                
+                # Check as netbios does not allow lenghts over 20
+                if len(form.firstname.data) + len(form.lastname.data) > 20:
+                    flash('Username is too long. Please use another format')
                     return render_template('createuser.html', title='Create User', form=form)
                 
                 ad.add_user(form.firstname.data, form.lastname.data, form.password.data, global_username, global_password)

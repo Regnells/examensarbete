@@ -69,11 +69,22 @@ class ad_tools:
         except:
             pass
 
-    def add_user(self, firstname, lastname, password, creator, creator_password):
+    def add_user(self, ou, firstname, lastname, department, title, telephone,  password, creator, creator_password):
         # This requires the PC to be domain joined.
         pyad.set_defaults(ldap_server="172.16.1.36", username=f"{creator}@examen.local", password=f"{creator_password}")
-        ou = pyad.adcontainer.ADContainer.from_dn("OU=exusers,DC=examen,DC=local")
+        ou = pyad.adcontainer.ADContainer.from_dn(f"OU={ou},DC=examen,DC=local")
         # Optional attribute did not like f strings
         upn = f"{firstname.lower()}.{lastname.lower()}"
-        pyad.aduser.ADUser.create(f"{firstname} {lastname}", ou, password, optional_attributes={"givenName":firstname,"sn":lastname,"userPrincipalName":f"{upn}@examen.local","sAMAccountName":upn})
+        pyad.aduser.ADUser.create(f"{firstname} {lastname}",
+                                   ou, 
+                                   password, 
+                                   optional_attributes={
+                                                        "givenName":firstname,
+                                                        "sn":lastname,
+                                                        "userPrincipalName":f"{upn}@examen.local",
+                                                        "sAMAccountName":upn, 
+                                                        "telephoneNumber":telephone,
+                                                        "department":department,
+                                                        "title":title
+                                                        })
 

@@ -199,7 +199,17 @@ def createuser():
                     flash('Username is too long. Please use another format')
                     return render_template('createuser.html', title='Create User', form=form)
                 
-                ad.add_user(form.firstname.data, form.lastname.data, form.password.data, global_username, global_password)
+                ad.add_user(
+                                form.ou.data,
+                                form.firstname.data, 
+                                form.lastname.data, 
+                                form.department.data,
+                                form.title.data,
+                                form.telephone.data,
+                                form.password.data, 
+                                global_username, 
+                                global_password
+                            )
                 flash('User created successfully.')
                 return render_template('createuser.html', title='Create User', form=form)
             except:

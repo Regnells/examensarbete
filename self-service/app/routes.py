@@ -210,7 +210,7 @@ def createuser():
                                 global_username, 
                                 global_password
                             )
-                flash('User created successfully.')
+                flash(f'User created successfully.\n Username: {form.firstname.data.lower()}.{form.lastname.data.lower()}@examen.local')
                 return render_template('createuser.html', title='Create User', form=form)
             except:
                 flash('Error creating user.')
